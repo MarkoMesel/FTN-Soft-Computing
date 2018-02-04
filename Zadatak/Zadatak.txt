@@ -1,0 +1,1 @@
+Video zapis sadrzi plato braon boje i ljude koji se krecu. Izvrsiti prebrojavanje ljudi koji se u barem jednom trenutnku nadju na platou. Potrebno je postici tacnost od bar 60%.
