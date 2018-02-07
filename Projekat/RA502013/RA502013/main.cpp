@@ -8,7 +8,7 @@ using namespace cv;
 int main(){
 
 	//Ime trenutnog videa
-	string vidName = "video2";
+	string vidName = "video1";
 
 	// Create a VideoCapture object and open the input file
 	// If the input is the web camera, pass 0 instead of the video file name
@@ -32,16 +32,46 @@ int main(){
 
 		// Capture frame-by-frame
 		cap >> frame;
-  
+
 		// If the frame is empty, break immediately
 		if (frame.empty())
 			break;
- 
+		
+		//Definisi prostor koji te zanima
+		cv::Rect cropArea(167, 113, 364, 349);
+
+		//Crop-uj frame
+		frame = frame(cropArea);
+
+		/*
+		for(int y=0;y<frame.rows;y++)
+		{
+			for(int x=0;x<frame.cols;x++)
+			{
+				// get pixel
+				Vec3b colorf0 = comparableFrame.at<Vec3b>(Point(x,y));
+				Vec3b colorf = frame.at<Vec3b>(Point(x,y));
+				// ... do something to the color ....
+				
+				if(colorf0 != colorf)
+				{
+					colorf = Vec3b(0,0,0);
+				}
+				
+
+				// set pixel
+				frame.at<Vec3b>(Point(x,y)) = colorf;
+			}
+		}
+		*/
+
+			
 		// Display the resulting frame
 		imshow( "Frame", frame );
 
 		//Generisi ime trenutnog frejma
 		string name = "frame " + std::to_string(static_cast<long long>(count)) + ".png";
+
 
 		//Ako folder "Frejmovi" ne postoji, sacuvaj u njega trenutni frame
 		if (CreateDirectory(outputDir.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
@@ -59,11 +89,11 @@ int main(){
 			break;
 	}
   
-  // When everything done, release the video capture object
-  cap.release();
+	// When everything done, release the video capture object
+	cap.release();
  
-  // Closes all the frames
-  destroyAllWindows();
+	// Closes all the frames
+	destroyAllWindows();
      
-  return 0;
+	return 0;
 }
