@@ -4,6 +4,13 @@
  
 using namespace std;
 using namespace cv;
+
+int H_MIN = 0;
+int H_MAX = 256;
+int S_MIN = 0;
+int S_MAX = 60;
+int V_MIN = 0;
+int V_MAX = 60;
  
 int main(){
 
@@ -43,29 +50,31 @@ int main(){
 		//Crop-uj frame
 		frame = frame(cropArea);
 
-		/*
-		for(int y=0;y<frame.rows;y++)
-		{
-			for(int x=0;x<frame.cols;x++)
-			{
-				// get pixel
-				Vec3b colorf0 = comparableFrame.at<Vec3b>(Point(x,y));
-				Vec3b colorf = frame.at<Vec3b>(Point(x,y));
-				// ... do something to the color ....
-				
-				if(colorf0 != colorf)
-				{
-					colorf = Vec3b(0,0,0);
-				}
-				
+		//Definisi prostor koji te zanima
+		cv::Rect cropArea2(71, 35, 156, 314);
 
-				// set pixel
-				frame.at<Vec3b>(Point(x,y)) = colorf;
-			}
-		}
-		*/
+		//Crop-uj frame
+		frame = frame(cropArea2);
 
-			
+		//Konvertuj boju u HSV radi lakseg pracenja boja i pokreta
+		cvtColor(frame,frame,COLOR_BGR2HSV);
+
+		//Filtriraj sliku tako da bude prikazana boja koja te interesuje
+		inRange(frame, Scalar(H_MIN,S_MIN,V_MIN), Scalar(H_MAX,S_MAX,V_MAX), frame);
+
+		//Smanji ili potpuno eliminisi sum
+		//Mat erodeElement = getStructuringElement(MORPH_RECT,Size(1,1));
+		//erode(frame,frame,erodeElement);
+
+
+		//Povecaj piksele od interesa
+		//Mat dilateElement = getStructuringElement(MORPH_RECT,Size(5,5));
+		//dilate(frame,frame,erodeElement);
+		//dilate(frame,frame,erodeElement);
+		//dilate(frame,frame,erodeElement);
+		//dilate(frame,frame,erodeElement);
+
+
 		// Display the resulting frame
 		imshow( "Frame", frame );
 
@@ -95,5 +104,28 @@ int main(){
 	// Closes all the frames
 	destroyAllWindows();
      
+			/*
+		for(int y=0;y<frame.rows;y++)
+		{
+			for(int x=0;x<frame.cols;x++)
+			{
+				// get pixel
+				Vec3b colorf0 = comparableFrame.at<Vec3b>(Point(x,y));
+				Vec3b colorf = frame.at<Vec3b>(Point(x,y));
+				// ... do something to the color ....
+				
+				if(colorf0 != colorf)
+				{
+					colorf = Vec3b(0,0,0);
+				}
+				
+
+				// set pixel
+				frame.at<Vec3b>(Point(x,y)) = colorf;
+			}
+		}
+		*/
+
+
 	return 0;
 }
