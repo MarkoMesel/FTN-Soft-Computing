@@ -90,17 +90,19 @@ int main(){
 		//Prebrojavanje svih piksela bele boje unutar trenutnog frame-a.
 		double pNum = cv::countNonZero(mask);
 
+		int n = 144;
+
 		if(pNum != 0)
 		{
-			if(floor(pNum/144) == 0)
+			if(floor(pNum/n) == 0)
 			{
 				peopleCountNew = 1;
 				cout << peopleCountNew << '\n';
 			}
 			else
 			{
-				peopleCountNew = int(pNum/130);
-				cout << int(pNum/130) << '\n';
+				peopleCountNew = int(pNum/(n-14));
+				cout << int(pNum/(n-14)) << '\n';
 			}
 			imshow( "Frame", frame );
 		} else
