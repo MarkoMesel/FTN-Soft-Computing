@@ -21,7 +21,7 @@ int detectedSum = 0;
 int main(){
 
 	//Ime trenutnog videa
-	string vidName = "video1";
+	string vidName = "video10";
 
 	//VideoCapture objekat koji ce sadrzati video
 	VideoCapture cap("Materijali/" + vidName + ".mp4");
@@ -99,8 +99,8 @@ int main(){
 			}
 			else
 			{
-				peopleCountNew = int(pNum/144);
-				cout << int(pNum/144) << '\n';
+				peopleCountNew = int(pNum/130);
+				cout << int(pNum/130) << '\n';
 			}
 			imshow( "Frame", frame );
 		} else
