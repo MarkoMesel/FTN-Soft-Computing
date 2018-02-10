@@ -23,11 +23,10 @@ int main(){
 	//Ime trenutnog videa
 	string vidName = "video1";
 
-	// Create a VideoCapture object and open the input file
-	// If the input is the web camera, pass 0 instead of the video file name
+	//VideoCapture objekat koji ce sadrzati video
 	VideoCapture cap("Materijali/" + vidName + ".mp4");
     
-	// Check if camera opened successfully
+	//Proveri da li se video uspesno load-ovao
 	if(!cap.isOpened()){
 		cout << "Error opening video stream or file" << endl;
 		return -1;
@@ -37,14 +36,14 @@ int main(){
 	int count = -1;
 
 	//Folder u koji ce se cuvati frejmovi
-	string outputDir = "Frejmovi_" + vidName + "\\";
-     
+	//string outputDir = "Frejmovi_" + vidName + "\\";
+	
 	while(1){
 
+		//Mat promenljiva koja ce sadrzati trenutni frejm iz videa
 		Mat frame;
-		Mat oldFrame;
 
-		// Capture frame-by-frame
+		//U svakoj sledecoj iteraciji stavi sledeci frame iz "cap" u "frame"
 		cap >> frame;
 
 		// If the frame is empty, break immediately
@@ -60,16 +59,14 @@ int main(){
 		//Definisi prostor koji te zanima
 		cv::Rect cropArea2(71, 35, 156, 314);
 
-		//Crop-uj frame
+		//Ponovo crop-uj frame
 		frame = frame(cropArea2);
 
 		//Definisi prostor koji te zanima
 		cv::Rect cropArea3(0, 0, 132, 217);
 
-		//Crop-uj frame
+		//Ponovo crop-uj frame
 		frame = frame(cropArea3);
-
-		oldFrame = frame;
 
 		//Konvertuj boju u HSV radi lakseg pracenja boja i pokreta
 		cvtColor(frame,frame,COLOR_BGR2HSV);
@@ -80,31 +77,19 @@ int main(){
 		//Smanji ili potpuno eliminisi sum
 		Mat erodeElement = getStructuringElement(MORPH_RECT,Size(3,3));
 		erode(frame,frame,erodeElement);
-		//erode(frame,frame,erodeElement);
-		//erode(frame,frame,erodeElement);
-
 
 		//Povecaj piksele od interesa
 		Mat dilateElement = getStructuringElement(MORPH_RECT,Size(10,10));
 		dilate(frame,frame,erodeElement);
 		dilate(frame,frame,dilateElement);
-		//dilate(frame,frame,dilateElement);
-		/*
-		cv::rectangle(
-			frame,
-			cv::Point(5, 10),
-			cv::Point(20, 30),
-			cv::Scalar(255, 255, 255)
-		);
-		*/
-		
 
-		// Display the resulting frame
-
-		cv::Mat mask;    //image is CV_8UC1
+		//Maska pomocu koje cemo moci da izbrojimo kolicinu piksela u trenutnom frame-u koji su obojeni belom bojom
+		cv::Mat mask;
 		cv::inRange(frame, 255, 255, mask);
+
+		//Prebrojavanje svih piksela bele boje unutar trenutnog frame-a.
 		double pNum = cv::countNonZero(mask);
-		//system("cls");
+
 		if(pNum != 0)
 		{
 			if(floor(pNum/144) == 0)
@@ -120,12 +105,19 @@ int main(){
 			imshow( "Frame", frame );
 		} else
 		{
-			//peopleCountNew = 0;
+			peopleCountNew = 0;
 		}
 
-		if(peopleCountNew != peopleCountOld)
+		if(peopleCountNew > peopleCountOld)
 		{
 			detectedSum += peopleCountNew;
+		}
+		else if (peopleCountNew < peopleCountOld)
+		{
+			if ((peopleCountOld - peopleCountNew) == 1)
+			{
+				peopleCountNew = peopleCountOld;
+			}
 		}
 
 		//cout<<"Ukupan broj Ljudi = "<< detectedSum;

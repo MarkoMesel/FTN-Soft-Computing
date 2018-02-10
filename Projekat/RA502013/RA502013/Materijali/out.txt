@@ -1,12 +1,12 @@
 RA50/2013,Marko Meseldžija
 file,count
 video1.mp4,4
-video2.mp4,367
-video3.mp4,37
-video4.mp4,95
+video2.mp4,187
+video3.mp4,27
+video4.mp4,68
 video5.mp4,4
-video6.mp4,238
-video7.mp4,179
-video8.mp4,31
-video9.mp4,74
-video10.mp4,212
+video6.mp4,120
+video7.mp4,110
+video8.mp4,22
+video9.mp4,35
+video10.mp4,104
