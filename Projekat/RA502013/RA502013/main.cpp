@@ -1,6 +1,7 @@
 #include "opencv2/opencv.hpp"
 #include <iostream>
 #include <windows.h>
+#include <cmath>
  
 using namespace std;
 using namespace cv;
@@ -8,9 +9,14 @@ using namespace cv;
 int H_MIN = 0;
 int H_MAX = 256;
 int S_MIN = 0;
-int S_MAX = 60;
+int S_MAX = 50;
 int V_MIN = 0;
-int V_MAX = 60;
+int V_MAX = 100;
+
+int peopleCountNew = 0;
+int peopleCountOld = 0;
+
+int detectedSum = 0;
  
 int main(){
 
@@ -36,6 +42,7 @@ int main(){
 	while(1){
 
 		Mat frame;
+		Mat oldFrame;
 
 		// Capture frame-by-frame
 		cap >> frame;
@@ -56,6 +63,14 @@ int main(){
 		//Crop-uj frame
 		frame = frame(cropArea2);
 
+		//Definisi prostor koji te zanima
+		cv::Rect cropArea3(0, 0, 132, 217);
+
+		//Crop-uj frame
+		frame = frame(cropArea3);
+
+		oldFrame = frame;
+
 		//Konvertuj boju u HSV radi lakseg pracenja boja i pokreta
 		cvtColor(frame,frame,COLOR_BGR2HSV);
 
@@ -63,31 +78,71 @@ int main(){
 		inRange(frame, Scalar(H_MIN,S_MIN,V_MIN), Scalar(H_MAX,S_MAX,V_MAX), frame);
 
 		//Smanji ili potpuno eliminisi sum
-		//Mat erodeElement = getStructuringElement(MORPH_RECT,Size(1,1));
+		Mat erodeElement = getStructuringElement(MORPH_RECT,Size(3,3));
+		erode(frame,frame,erodeElement);
+		//erode(frame,frame,erodeElement);
 		//erode(frame,frame,erodeElement);
 
 
 		//Povecaj piksele od interesa
-		//Mat dilateElement = getStructuringElement(MORPH_RECT,Size(5,5));
-		//dilate(frame,frame,erodeElement);
-		//dilate(frame,frame,erodeElement);
-		//dilate(frame,frame,erodeElement);
-		//dilate(frame,frame,erodeElement);
-
+		Mat dilateElement = getStructuringElement(MORPH_RECT,Size(10,10));
+		dilate(frame,frame,erodeElement);
+		dilate(frame,frame,dilateElement);
+		//dilate(frame,frame,dilateElement);
+		/*
+		cv::rectangle(
+			frame,
+			cv::Point(5, 10),
+			cv::Point(20, 30),
+			cv::Scalar(255, 255, 255)
+		);
+		*/
+		
 
 		// Display the resulting frame
-		imshow( "Frame", frame );
+
+		cv::Mat mask;    //image is CV_8UC1
+		cv::inRange(frame, 255, 255, mask);
+		double pNum = cv::countNonZero(mask);
+		//system("cls");
+		if(pNum != 0)
+		{
+			if(floor(pNum/144) == 0)
+			{
+				peopleCountNew = 1;
+				cout << peopleCountNew << '\n';
+			}
+			else
+			{
+				peopleCountNew = int(pNum/144);
+				cout << int(pNum/144) << '\n';
+			}
+			imshow( "Frame", frame );
+		} else
+		{
+			//peopleCountNew = 0;
+		}
+
+		if(peopleCountNew != peopleCountOld)
+		{
+			detectedSum += peopleCountNew;
+		}
+
+		//cout<<"Ukupan broj Ljudi = "<< detectedSum;
+
+		peopleCountOld = peopleCountNew;
+
 
 		//Generisi ime trenutnog frejma
 		string name = "frame " + std::to_string(static_cast<long long>(count)) + ".png";
 
-
+		/*
 		//Ako folder "Frejmovi" ne postoji, sacuvaj u njega trenutni frame
 		if (CreateDirectory(outputDir.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())
 		{
 			imwrite(outputDir + name, frame);
 		}
-
+		*/
 
 		//Inkrementiraj brojac
 		count++;
@@ -102,7 +157,6 @@ int main(){
 	cap.release();
  
 	// Closes all the frames
-	destroyAllWindows();
      
 			/*
 		for(int y=0;y<frame.rows;y++)
@@ -126,6 +180,11 @@ int main(){
 		}
 		*/
 
+	cout<<"Ukupan broj Ljudi = "<< detectedSum;
+
+	cin.get();
+
+	destroyAllWindows();
 
 	return 0;
 }
